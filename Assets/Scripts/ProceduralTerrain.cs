@@ -39,13 +39,18 @@ public class ProceduralTerrain : MonoBehaviour
         terrainMesh.name = "Terrain";
         texture = HeightMapToTexture.GenerateTexture(heightMap, regions.ToArray(), textureFilterMode);
 
+        Material mat = new Material(Shader.Find("Standard"));
+        mat.mainTexture = texture;
+        mat.SetFloat("_Glossiness", 0.1F);
+        mat.SetFloat("_Metallic", 0.0F);
+
         filter = GetComponent<MeshFilter>();
         col = GetComponent<MeshCollider>();
         rend = GetComponent<MeshRenderer>();
 
         filter.mesh = terrainMesh;
         col.sharedMesh = terrainMesh;
-        rend.sharedMaterial.mainTexture = texture;
+        rend.sharedMaterial = mat;
 
         transform.localScale = Vector3.one * scale;
     }
