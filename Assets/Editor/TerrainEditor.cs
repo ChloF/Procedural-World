@@ -10,9 +10,6 @@ using UnityEditorInternal;
 public class TerrainEditor : Editor
 {
     Terrain terrain;
-
-    Vector2Int dimensions = new Vector2Int();
-
     bool displayNoiseProperties = false;
     bool displayRenderingProperties = false;
     bool displayRegions = false;
@@ -27,13 +24,12 @@ public class TerrainEditor : Editor
         serializedObject.Update();
 
         EditorGUI.BeginChangeCheck();
- 
-
 
         terrain.width = Mathf.Clamp(EditorGUILayout.IntField("X", terrain.width), 2, 100);
         terrain.height = Mathf.Clamp(EditorGUILayout.IntField("Y", terrain.height), 2, 100);
 
         terrain.heightScale = EditorGUILayout.FloatField("Height Scale", terrain.heightScale);
+        terrain.heightCurve = EditorGUILayout.CurveField("Height Curve", terrain.heightCurve);
 
         NoiseInspector();
         RenderingInspector();

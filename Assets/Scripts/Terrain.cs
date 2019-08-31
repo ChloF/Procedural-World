@@ -24,8 +24,8 @@ public class Terrain : MonoBehaviour
     public void UpdateTerrain()
     {
         float[,] heightMap = Noise.GenerateNoiseMap(width, height, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
-       
-        Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, heightScale, flatShading);
+
+        Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, heightScale, heightCurve, flatShading);
         Texture2D texture = HeightMapToTexture.GenerateTexture(heightMap, regions.ToArray(), textureFilterMode);
 
         GetComponent<MeshFilter>().mesh = terrainMesh;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class HeightMapToMesh
 {
-    public static Mesh GenerateMesh(float[,] heightMap, float heightScale, bool flatShading)
+    public static Mesh GenerateMesh(float[,] heightMap, float heightScale, AnimationCurve heightCurve, bool flatShading)
     {
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);
@@ -18,7 +18,7 @@ public static class HeightMapToMesh
         {
             for (int x = 0; x < width; x++)
             {
-                smoothVertices.Add(new Vector3(x, heightMap[x, y] * heightScale, y));
+                smoothVertices.Add(new Vector3(x, heightCurve.Evaluate(heightMap[x, y]) * heightScale, y));
 
                 if(!flatShading)
                 {
