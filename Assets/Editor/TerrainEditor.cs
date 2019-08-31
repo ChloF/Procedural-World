@@ -7,7 +7,7 @@ using UnityEditorInternal;
 
 [CustomEditor(typeof(ProceduralTerrain))]
 [CanEditMultipleObjects]
-public class TerrainEditor : Editor
+public class ProceduralTerrainEditor : Editor
 {
     ProceduralTerrain terrain;
     bool displayNoiseProperties = false;
@@ -25,8 +25,8 @@ public class TerrainEditor : Editor
 
         EditorGUI.BeginChangeCheck();
 
-        terrain.width = Mathf.Clamp(EditorGUILayout.IntField("X", terrain.width), 2, 100);
-        terrain.height = Mathf.Clamp(EditorGUILayout.IntField("Y", terrain.height), 2, 100);
+        terrain.width = Mathf.Clamp(EditorGUILayout.IntField("Width", terrain.width), 2, 100);
+        terrain.height = Mathf.Clamp(EditorGUILayout.IntField("Height", terrain.height), 2, 100);
 
         terrain.heightScale = EditorGUILayout.FloatField("Height Scale", terrain.heightScale);
         terrain.heightCurve = EditorGUILayout.CurveField("Height Curve", terrain.heightCurve);
@@ -34,6 +34,14 @@ public class TerrainEditor : Editor
         NoiseInspector();
         RenderingInspector();
         RegionInspector();
+
+        GUILayout.BeginHorizontal();
+
+        GUILayout.FlexibleSpace();
+        GUILayout.Button(terrain.texture, GUILayout.Width(terrain.texture.width), GUILayout.Height(terrain.texture.height));
+        GUILayout.FlexibleSpace();
+
+        GUILayout.EndHorizontal();
 
         if (EditorGUI.EndChangeCheck())
         {

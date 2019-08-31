@@ -15,18 +15,18 @@ public class ProceduralTerrain : MonoBehaviour
     [Range(0,1)]
     public float noisePersistence;
     public float noiseLacunarity;
-
     public bool flatShading;
     public FilterMode textureFilterMode;
-
     public List<TerrainType> regions;
+
+    public Texture2D texture;
 
     public void UpdateTerrain()
     {
         float[,] heightMap = Noise.GenerateNoiseMap(width, height, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
 
         Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, heightScale, heightCurve, flatShading);
-        Texture2D texture = HeightMapToTexture.GenerateTexture(heightMap, regions.ToArray(), textureFilterMode);
+        texture = HeightMapToTexture.GenerateTexture(heightMap, regions.ToArray(), textureFilterMode);
 
         GetComponent<MeshFilter>().mesh = terrainMesh;
         GetComponent<MeshRenderer>().sharedMaterial.mainTexture = texture;
