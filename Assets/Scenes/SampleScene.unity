@@ -326,6 +326,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27fb2e0a429c4244bac84f8822629487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colourThresholds: []
+  colours: []
   rend: {fileID: 1241603815}
 --- !u!64 &1241603814
 MeshCollider:
@@ -431,12 +433,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   height: 100
-  seed: 0
+  seed: 87
   offset: {x: 0, y: 0}
-  noiseScale: 25
-  octaves: 4
+  noiseScale: 27
+  octaves: 6
   persistence: 0.5
-  lacunarity: 4
+  lacunarity: 2
+  regions:
+  - name: Deep Water
+    height: 0.3
+    colour: {r: 0.10588236, g: 0.49850464, b: 0.83137256, a: 0}
+  - name: Shallow Water
+    height: 0.4
+    colour: {r: 0.19517623, g: 0.75733703, b: 0.9622642, a: 0}
+  - name: Sand
+    height: 0.46
+    colour: {r: 0.95686024, g: 0.9811321, b: 0.58775365, a: 0}
+  - name: Grass 1
+    height: 0.55
+    colour: {r: 0.38316655, g: 0.6792453, b: 0.2979708, a: 0}
+  - name: Grass 2
+    height: 0.7
+    colour: {r: 0.22899605, g: 0.5849056, b: 0.25865516, a: 0}
+  - name: Rock 1
+    height: 0.75
+    colour: {r: 0.4056604, g: 0.33664867, b: 0.3272072, a: 0}
+  - name: Rock 2
+    height: 0.9
+    colour: {r: 0.3018868, g: 0.28279427, b: 0.2719829, a: 0}
+  - name: Snow
+    height: 1
+    colour: {r: 0.8537736, g: 1, b: 0.99261886, a: 0}
 --- !u!4 &1857003943
 Transform:
   m_ObjectHideFlags: 0
