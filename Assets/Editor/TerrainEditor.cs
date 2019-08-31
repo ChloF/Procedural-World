@@ -5,18 +5,18 @@ using UnityEditor;
 using UnityEditorInternal;
 
 
-[CustomEditor(typeof(Terrain))]
+[CustomEditor(typeof(ProceduralTerrain))]
 [CanEditMultipleObjects]
 public class TerrainEditor : Editor
 {
-    Terrain terrain;
+    ProceduralTerrain terrain;
     bool displayNoiseProperties = false;
     bool displayRenderingProperties = false;
     bool displayRegions = false;
 
     private void OnEnable()
     {
-        terrain = (Terrain)target;
+        terrain = (ProceduralTerrain)target;
     }
 
     public override void OnInspectorGUI()

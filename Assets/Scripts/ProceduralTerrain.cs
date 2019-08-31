@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
-public class Terrain : MonoBehaviour
+public class ProceduralTerrain : MonoBehaviour
 {
     public int width, height;
     public int seed;
