@@ -21,6 +21,11 @@ public class ProceduralTerrain : MonoBehaviour
 
     public Texture2D texture;
 
+    private void Start()
+    {
+        UpdateTerrain();
+    }
+
     public void UpdateTerrain()
     {
         float[,] heightMap = Noise.GenerateNoiseMap(width, height, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
