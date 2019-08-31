@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(MeshFilter), typeof(MeshCollider), typeof(MeshFilter))]
 public class ProceduralTerrain : MonoBehaviour
 {
     public int width, height;
@@ -18,8 +18,12 @@ public class ProceduralTerrain : MonoBehaviour
     public bool flatShading;
     public FilterMode textureFilterMode;
     public List<TerrainType> regions;
-
     public Texture2D texture;
+
+    private MeshFilter filter;
+    private MeshCollider col;
+    private MeshRenderer rend;
+
 
     private void Start()
     {
@@ -31,10 +35,16 @@ public class ProceduralTerrain : MonoBehaviour
         float[,] heightMap = Noise.GenerateNoiseMap(width, height, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
 
         Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, heightScale, heightCurve, flatShading);
+        terrainMesh.name = "Terrain";
         texture = HeightMapToTexture.GenerateTexture(heightMap, regions.ToArray(), textureFilterMode);
 
-        GetComponent<MeshFilter>().mesh = terrainMesh;
-        GetComponent<MeshRenderer>().sharedMaterial.mainTexture = texture;
+        filter = GetComponent<MeshFilter>();
+        col = GetComponent<MeshCollider>();
+        rend = GetComponent<MeshRenderer>();
+
+        filter.mesh = terrainMesh;
+        col.sharedMesh = terrainMesh;
+        rend.sharedMaterial.mainTexture = texture;
     }
 
     public void OnValidate()
