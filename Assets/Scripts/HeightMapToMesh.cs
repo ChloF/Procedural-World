@@ -20,8 +20,6 @@ public static class HeightMapToMesh
                 uv.Add(new Vector2((float)x / (width - 1), (float)y / (height - 1)));
             }
         }
-        Debug.Log("Vertices: " + vertices.Count);
-
 
         int[] triangles = new int[(width - 1) * (height - 1) * 6];
 

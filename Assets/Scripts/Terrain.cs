@@ -20,34 +20,12 @@ public class Terrain : MonoBehaviour
     {
         float[,] heightMap = Noise.GenerateNoiseMap(width, height, noiseScale, octaves, persistence, lacunarity, seed, offset);
 
-        Color[] colourMap = GenerateColourMap(heightMap);
+       
         Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, heightScale);
+        Texture2D texture = HeightMapToTexture.GenerateTexture(heightMap, regions);
 
         GetComponent<MeshFilter>().mesh = terrainMesh;
-    }
-
-    public Color[] GenerateColourMap(float[,] heightMap)
-    {
-        Color[] colourMap = new Color[width * height];
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                float curHeight = heightMap[x, y];
-
-                for (int i = 0; i < regions.Length; i++)
-                {
-                    if (curHeight <= regions[i].height)
-                    {
-                        colourMap[y * width + x] = regions[i].colour;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return colourMap;
+        GetComponent<MeshRenderer>().material.mainTexture = texture;
     }
 }
 
