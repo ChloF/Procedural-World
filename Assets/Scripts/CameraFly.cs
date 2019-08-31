@@ -15,7 +15,7 @@ public class CameraFly : MonoBehaviour
     private void Start()
     {
         totalRotX = 0;
-        transform.rotation.eulerAngles.x = 0
+        transform.rotation = Quaternion.identity;
         rb = GetComponent<Rigidbody>();
     }
 
