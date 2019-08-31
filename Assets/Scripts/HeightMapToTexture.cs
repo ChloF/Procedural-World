@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class HeightMapToTexture
 {
-    public static Texture2D GenerateTexture(float[,] heightMap, TerrainType[] regions)
+    public static Texture2D GenerateTexture(float[,] heightMap, TerrainType[] regions, FilterMode filterMode)
     {
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);
@@ -32,7 +32,7 @@ public static class HeightMapToTexture
         Texture2D tex = new Texture2D(width, height);
 
         tex.SetPixels(colourMap);
-        tex.filterMode = FilterMode.Bilinear;
+        tex.filterMode = filterMode;
 
         return tex;
     }

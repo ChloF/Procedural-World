@@ -14,6 +14,8 @@ public class Terrain : MonoBehaviour
     [Range(0,1)]
     public float persistence;
     public float lacunarity;
+    public bool flatShading;
+    public FilterMode textureFilterMode;
     public TerrainType[] regions;
 
     void Update()
@@ -21,8 +23,8 @@ public class Terrain : MonoBehaviour
         float[,] heightMap = Noise.GenerateNoiseMap(width, height, noiseScale, octaves, persistence, lacunarity, seed, offset);
 
        
-        Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, heightScale);
-        Texture2D texture = HeightMapToTexture.GenerateTexture(heightMap, regions);
+        Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, heightScale, flatShading);
+        Texture2D texture = HeightMapToTexture.GenerateTexture(heightMap, regions, textureFilterMode);
 
         GetComponent<MeshFilter>().mesh = terrainMesh;
         GetComponent<MeshRenderer>().material.mainTexture = texture;
