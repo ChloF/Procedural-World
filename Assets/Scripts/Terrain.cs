@@ -7,27 +7,34 @@ public class Terrain : MonoBehaviour
 {
     public int width, height;
     public int seed;
-    public Vector2 offset;
+    public Vector2 noiseOffset;
     public float heightScale;
+    public AnimationCurve heightCurve;
     public float noiseScale;
-    public int octaves;
+    public int noiseOctaves;
     [Range(0,1)]
-    public float persistence;
-    public float lacunarity;
+    public float noisePersistence;
+    public float noiseLacunarity;
+
     public bool flatShading;
     public FilterMode textureFilterMode;
-    public TerrainType[] regions;
 
-    void Update()
+    public List<TerrainType> regions;
+
+    public void UpdateTerrain()
     {
-        float[,] heightMap = Noise.GenerateNoiseMap(width, height, noiseScale, octaves, persistence, lacunarity, seed, offset);
-
+        float[,] heightMap = Noise.GenerateNoiseMap(width, height, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
        
         Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, heightScale, flatShading);
-        Texture2D texture = HeightMapToTexture.GenerateTexture(heightMap, regions, textureFilterMode);
+        Texture2D texture = HeightMapToTexture.GenerateTexture(heightMap, regions.ToArray(), textureFilterMode);
 
         GetComponent<MeshFilter>().mesh = terrainMesh;
-        GetComponent<MeshRenderer>().material.mainTexture = texture;
+        GetComponent<MeshRenderer>().sharedMaterial.mainTexture = texture;
+    }
+
+    public void OnValidate()
+    {
+        UpdateTerrain();
     }
 }
 
@@ -37,4 +44,19 @@ public struct TerrainType
     public string name;
     public float height;
     public Color colour;
+
+    public void SetName(string newName)
+    {
+        name = newName;
+    }
+
+    public void SetHeight(float newHeight)
+    {
+        height = newHeight;
+    }
+
+    public void SetColour(Color newColour)
+    {
+        colour = newColour;
+    }
 }
