@@ -9,7 +9,6 @@ public class CameraFly : MonoBehaviour
     public float rotationSensitivity;
 
     private float totalRotX;
-    private float totalRotY;
 
     private Rigidbody rb;
 
@@ -29,8 +28,6 @@ public class CameraFly : MonoBehaviour
         float rotX = -Input.GetAxis("Mouse Y") * rotationSensitivity;
         float rotY = Input.GetAxis("Mouse X") * rotationSensitivity;
 
-        totalRotY += rotY;
-
         if((totalRotX < 60f || rotX < 0) && (totalRotX > -70f || rotX > 0))
         {
             totalRotX += rotX;
@@ -39,8 +36,6 @@ public class CameraFly : MonoBehaviour
         {
             rotX = 0;
         }
-
-
 
         transform.Rotate(Vector3.right * rotX, Space.Self);
         transform.Rotate(Vector3.up * rotY, Space.World);
