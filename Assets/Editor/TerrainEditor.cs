@@ -10,6 +10,7 @@ using UnityEditorInternal;
 public class ProceduralTerrainEditor : Editor
 {
     ProceduralTerrain terrain;
+
     bool displayNoiseProperties = false;
     bool displayRenderingProperties = false;
     bool displayRegions = false;
@@ -26,10 +27,10 @@ public class ProceduralTerrainEditor : Editor
         EditorGUI.BeginChangeCheck();
 
         terrain.width = Mathf.Clamp(EditorGUILayout.IntField("Width", terrain.width), 2, 100);
-        terrain.height = Mathf.Clamp(EditorGUILayout.IntField("Height", terrain.height), 2, 100);
-
-        terrain.heightScale = EditorGUILayout.FloatField("Height Scale", terrain.heightScale);
+        terrain.depth = Mathf.Clamp(EditorGUILayout.IntField("Depth", terrain.depth), 2, 100);
+        terrain.height = Mathf.Clamp(EditorGUILayout.FloatField("Height", terrain.height), 0, float.MaxValue);
         terrain.heightCurve = EditorGUILayout.CurveField("Height Curve", terrain.heightCurve);
+        terrain.scale = Mathf.Clamp(EditorGUILayout.FloatField("Scale", terrain.scale), 0.1F, float.MaxValue);
 
         NoiseInspector();
         RenderingInspector();

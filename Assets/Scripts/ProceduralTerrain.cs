@@ -5,10 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshCollider), typeof(MeshFilter))]
 public class ProceduralTerrain : MonoBehaviour
 {
-    public int width, height;
+    public int width, depth;
+    public float scale;
     public int seed;
     public Vector2 noiseOffset;
-    public float heightScale;
+    public float height;
     public AnimationCurve heightCurve;
     public float noiseScale;
     public int noiseOctaves;
@@ -32,9 +33,9 @@ public class ProceduralTerrain : MonoBehaviour
 
     public void UpdateTerrain()
     {
-        float[,] heightMap = Noise.GenerateNoiseMap(width, height, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
+        float[,] heightMap = Noise.GenerateNoiseMap(width, depth, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
 
-        Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, heightScale, heightCurve, flatShading);
+        Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, height, heightCurve, flatShading);
         terrainMesh.name = "Terrain";
         texture = HeightMapToTexture.GenerateTexture(heightMap, regions.ToArray(), textureFilterMode);
 
@@ -45,6 +46,8 @@ public class ProceduralTerrain : MonoBehaviour
         filter.mesh = terrainMesh;
         col.sharedMesh = terrainMesh;
         rend.sharedMaterial.mainTexture = texture;
+
+        transform.localScale = Vector3.one * scale;
     }
 
     public void OnValidate()
