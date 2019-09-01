@@ -11,9 +11,9 @@ public class ProceduralTerrainEditor : Editor
 {
     ProceduralTerrain terrain;
 
-    bool displayNoiseProperties = false;
-    bool displayRenderingProperties = false;
-    bool displayRegions = false;
+    static bool displayNoiseProperties = false;
+    static bool displayRenderingProperties = false;
+    static bool displayRegions = false;
 
     private void OnEnable()
     {
@@ -32,31 +32,10 @@ public class ProceduralTerrainEditor : Editor
         terrain.heightCurve = EditorGUILayout.CurveField("Height Curve", terrain.heightCurve);
         terrain.scale = Mathf.Clamp(EditorGUILayout.FloatField("Scale", terrain.scale), 0.1F, float.MaxValue);
 
-        NoiseInspector();
-        RenderingInspector();
-        RegionInspector();
-
-        GUILayout.BeginHorizontal();
-
-        GUILayout.FlexibleSpace();
-        GUILayout.Button(terrain.texture, GUILayout.Width(terrain.texture.width), GUILayout.Height(terrain.texture.height));
-        GUILayout.FlexibleSpace();
-
-        GUILayout.EndHorizontal();
-
-        if (EditorGUI.EndChangeCheck())
-        {
-            terrain.OnValidate();
-        }
-    }
-
-    void NoiseInspector()
-    {
         displayNoiseProperties = EditorGUILayout.BeginFoldoutHeaderGroup(displayNoiseProperties, "Noise");
 
         if (displayNoiseProperties)
         {
-
             terrain.noiseScale = EditorGUILayout.FloatField("Scale", terrain.noiseScale);
             terrain.noiseOctaves = EditorGUILayout.IntSlider("Octaves", terrain.noiseOctaves, 1, 10);
             terrain.noisePersistence = EditorGUILayout.Slider("Persistence", terrain.noisePersistence, 0, 1);
@@ -79,10 +58,8 @@ public class ProceduralTerrainEditor : Editor
         }
 
         EditorGUILayout.EndFoldoutHeaderGroup();
-    }
 
-    void RenderingInspector()
-    {
+
         displayRenderingProperties = EditorGUILayout.BeginFoldoutHeaderGroup(displayRenderingProperties, "Rendering");
 
         if (displayRenderingProperties)
@@ -92,10 +69,8 @@ public class ProceduralTerrainEditor : Editor
         }
 
         EditorGUILayout.EndFoldoutHeaderGroup();
-    }
 
-    void RegionInspector()
-    {
+
         displayRegions = EditorGUILayout.BeginFoldoutHeaderGroup(displayRegions, "Regions");
 
         if (displayRegions)
@@ -141,5 +116,34 @@ public class ProceduralTerrainEditor : Editor
         }
 
         EditorGUILayout.EndFoldoutHeaderGroup();
+
+        GUILayout.BeginHorizontal();
+
+        GUILayout.FlexibleSpace();
+        GUILayout.Button(terrain.texture, GUILayout.Width(terrain.texture.width), GUILayout.Height(terrain.texture.height));
+        GUILayout.FlexibleSpace();
+
+        GUILayout.EndHorizontal();
+
+        if(EditorGUI.EndChangeCheck())
+        {
+            terrain.OnValidate();
+        }
+
+    }
+
+    void NoiseInspector()
+    {
+        
+    }
+
+    void RenderingInspector()
+    {
+
+    }
+
+    void RegionInspector()
+    {
+        
     }
 }
