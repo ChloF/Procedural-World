@@ -38,7 +38,7 @@ MonoBehaviour:
     overrideState: 0
     value: -12
   thicknessModifier:
-    overrideState: 1
+    overrideState: 0
     value: 1.5
   directLightingStrength:
     overrideState: 0

@@ -10,6 +10,16 @@ public class Slime : MonoBehaviour
     public bool alive = true;
     public float moveChance;
     public float tickRate = 10;
+    public float groundCheckDist;
+    public bool IsGrounded
+    {
+        get
+        {
+            Ray ray = new Ray(transform.position, Vector3.down);
+            LayerMask mask = ~LayerMask.NameToLayer("Environment");
+            return Physics.Raycast(ray, groundCheckDist, mask);
+        }
+    }
 
     private WaitForSeconds tick;
     private Rigidbody rb;
@@ -43,7 +53,7 @@ public class Slime : MonoBehaviour
 
     private void OnTick()
     {
-        if(Random.value < moveChance)
+        if(Random.value < moveChance && IsGrounded)
         {
             float theta = Random.value * 2 * Mathf.PI;
             Vector3 hopDir = new Vector3(Mathf.Cos(theta), 0, Mathf.Sin(theta));
