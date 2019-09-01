@@ -30,7 +30,6 @@ public class Slime : MonoBehaviour
         alive = true;
         environmentMask = ~LayerMask.NameToLayer("Environment");
         rb = GetComponent<Rigidbody>();
-        tick = new WaitForSeconds(1 / tickRate);
 
         StartCoroutine(Live());
     }
@@ -40,7 +39,7 @@ public class Slime : MonoBehaviour
         while (alive)
         {
             OnTick();
-            yield return tick;
+            yield return new WaitForSeconds(1 / tickRate);
         }
 
         StartCoroutine(Die());
