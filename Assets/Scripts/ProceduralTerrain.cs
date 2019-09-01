@@ -39,9 +39,9 @@ public class ProceduralTerrain : MonoBehaviour
         terrainMesh.name = "Terrain";
         texture = HeightMapToTexture.GenerateTexture(heightMap, regions.ToArray(), textureFilterMode);
 
-        Material mat = new Material(Shader.Find("Standard"));
-        mat.mainTexture = texture;
-        mat.SetFloat("_Glossiness", 0.1F);
+        Material mat = new Material(Shader.Find("HDRP/Lit"));
+        mat.SetTexture("_BaseColorMap", texture);
+        mat.SetFloat("_Smoothness", 0.1F);
         mat.SetFloat("_Metallic", 0.0F);
 
         filter = GetComponent<MeshFilter>();
