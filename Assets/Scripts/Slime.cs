@@ -45,15 +45,14 @@ public class Slime : MonoBehaviour
     {
         if(Random.value < moveChance)
         {
-            Vector2 hopDir = Random.insideUnitCircle.normalized;
+            float theta = Random.value * 2 * Mathf.PI;
+            Vector3 hopDir = new Vector3(Mathf.Cos(theta), 0, Mathf.Sin(theta));
             Hop(hopDir, horizontalForce, verticalForce);
         }
     }
 
     void Hop(Vector3 direction, float h, float v)
     {
-        direction.y = 0;
-
         rb.AddForce(direction.normalized * h + Vector3.up * v, ForceMode.Impulse);
     }
 }
