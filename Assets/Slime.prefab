@@ -63,6 +63,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   horizontalForce: 3
   verticalForce: 5
+  alive: 1
+  moveChance: 0.8
+  tickRate: 10
 --- !u!64 &944086601627360919
 MeshCollider:
   m_ObjectHideFlags: 0

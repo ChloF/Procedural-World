@@ -7,18 +7,46 @@ public class Slime : MonoBehaviour
 {
     public float horizontalForce;
     public float verticalForce;
+    public bool alive = true;
+    public float moveChance;
+    public float tickRate = 10;
+
+    private WaitForSeconds tick;
     private Rigidbody rb;
 
     private void Start()
     {
+        alive = true;
         rb = GetComponent<Rigidbody>();
+        tick = new WaitForSeconds(1 / tickRate);
+
+        StartCoroutine(Live());
     }
 
-    private void Update()
+    IEnumerator Live()
     {
-        if(Input.GetMouseButtonDown(0))
+        while (alive)
         {
-            Hop(transform.forward, horizontalForce, verticalForce);
+            OnTick();
+            yield return tick;
+        }
+
+        StartCoroutine(Die());
+        yield return null;
+    }
+
+    IEnumerator Die()
+    {
+        Destroy(this.gameObject);
+        yield return null;
+    }
+
+    private void OnTick()
+    {
+        if(Random.value < moveChance)
+        {
+            Vector2 hopDir = Random.insideUnitCircle.normalized;
+            Hop(hopDir, horizontalForce, verticalForce);
         }
     }
 
