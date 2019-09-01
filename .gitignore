@@ -6,6 +6,8 @@
 #But not source file with postfix. which is everything but a folder
 !*.*.meta
 
+*.blend1
+
 !.gitignore
 !/Assets/
 !/ProjectSettings/
