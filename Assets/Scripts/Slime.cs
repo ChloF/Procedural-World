@@ -9,17 +9,8 @@ public class Slime : MonoBehaviour
     public float verticalForce;
     public bool alive = true;
     public float moveChance;
-    public float tickRate = 1;
-    public bool IsGrounded
-    {
-        get
-        {
-            Ray ray = new Ray(transform.position, Vector3.down);
-            LayerMask ground = LayerMask.NameToLayer("Environment");
+    public float tickRate = 10;
 
-            return Physics.Raycast(ray, 0.1f, ground);
-        }
-    }
     private WaitForSeconds tick;
     private Rigidbody rb;
 
@@ -54,17 +45,15 @@ public class Slime : MonoBehaviour
     {
         if(Random.value < moveChance)
         {
-            if (IsGrounded)
-            {
-                float theta = Random.value * 2 * Mathf.PI;
-                Vector3 hopDir = new Vector3(Mathf.Cos(theta), 0, Mathf.Sin(theta));
-                Hop(hopDir, horizontalForce, verticalForce);
-            }
+            Vector2 hopDir = Random.insideUnitCircle.normalized;
+            Hop(hopDir, horizontalForce, verticalForce);
         }
     }
 
     void Hop(Vector3 direction, float h, float v)
     {
+        direction.y = 0;
+
         rb.AddForce(direction.normalized * h + Vector3.up * v, ForceMode.Impulse);
     }
 }
