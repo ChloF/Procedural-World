@@ -19,16 +19,16 @@ public class CameraFly : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         Vector3 force = new Vector3(Input.GetAxis("X"), Input.GetAxis("Y"), Input.GetAxis("Z"));
         force = transform.TransformDirection(force);
-        force *= speed;
+        force *= speed * Time.deltaTime * 100;
 
         rb.AddForce(force);
 
-        float rotX = -Input.GetAxis("Mouse Y") * rotationSensitivity;
-        float rotY = Input.GetAxis("Mouse X") * rotationSensitivity;
+        float rotX = -Input.GetAxis("Mouse Y") * rotationSensitivity * Time.deltaTime;
+        float rotY = Input.GetAxis("Mouse X") * rotationSensitivity * Time.deltaTime;
 
         if((totalRotX < 60f || rotX < 0) && (totalRotX > -70f || rotX > 0))
         {
