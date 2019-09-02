@@ -30,7 +30,6 @@ public class Slime : MonoBehaviour
         alive = true;
         environmentMask = ~LayerMask.NameToLayer("Environment");
         rb = GetComponent<Rigidbody>();
-
         StartCoroutine(Live());
     }
 
