@@ -1,68 +1,149 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class HeightMapToMesh
 {
-    public static Mesh GenerateMesh(float[,] heightMap, float heightScale, AnimationCurve heightCurve, bool flatShading)
+    public static Mesh GenerateMesh(float[,] heightMap, TerrainType[,] regionMap, TerrainType[] regions, float heightScale, AnimationCurve heightCurve, bool flatShading)
     {
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);
 
-        List<Vector3> smoothVertices = new List<Vector3>();
-        List<Vector3> flatVertices = new List<Vector3>();
-        List<Vector2> uv = new List<Vector2>();
-        int[] triangles = new int[(width - 1) * (height - 1) * 6];
+        List<Vector3> vertices = flatShading ? GenerateVerticesFlat(heightMap, width, height, heightScale, heightCurve) : GenerateVerticesSmooth(heightMap, width, height, heightScale, heightCurve);
+        List<Vector2> uv = GenerateUVs(vertices, width, height);
+        int[] triangles = flatShading ? GenerateTrianglesFlat(vertices) : GenerateTrianglesSmooth(width, height);
+
+        int subMeshCount = regions.Length;
+
+        List<int[]> subMeshTriangles = SeparateMeshSmooth(vertices, width, height, triangles, regionMap, regions);
+
+        Mesh mesh = new Mesh();
+        mesh.SetVertices(vertices);
+
+        mesh.subMeshCount = subMeshCount;
+
+        for (int i = 0; i < subMeshCount; i++)
+        {
+            mesh.SetTriangles(subMeshTriangles[i], i);
+        }
+
+        mesh.SetUVs(0, uv);
+        mesh.RecalculateNormals();
+
+        return mesh;
+    }
+
+    private static List<Vector3> GenerateVerticesSmooth(float[,] heightMap, int width, int height, float heightScale, AnimationCurve heightCurve)
+    {
+        List<Vector3> verts = new List<Vector3>(width * height);
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                smoothVertices.Add(new Vector3(x, heightCurve.Evaluate(heightMap[x, y]) * heightScale, y));
+                float vertexHeight = heightCurve.Evaluate(heightMap[x, y]) * heightScale;
 
-                if(!flatShading)
-                {
-                    uv.Add(new Vector2((float)x / (width - 1), (float)y / (width - 1)));
-                }
+                verts.Add(new Vector3(x, vertexHeight, y));
             }
         }
 
-        for (int tri = 0, vert = 0, y = 0; y < height-1; y++, vert++)
+        return verts;
+    }
+
+    private static List<Vector3> GenerateVerticesFlat(float[,] heightMap, int width, int height, float heightScale, AnimationCurve heightCurve)
+    {
+        List<Vector3> verts = new List<Vector3>();
+
+        for (int y = 0; y < height - 1; y++)
         {
-            for (int x = 0; x < width-1; x++, tri += 6, vert++)
+            for (int x = 0; x < width - 1; x++)
             {
-                triangles[tri] = vert;
-                triangles[tri + 3] = triangles[tri + 2] = vert + 1;
-                triangles[tri + 4] = triangles[tri + 1] = vert + width;
-                triangles[tri + 5] = vert + width + 1;
+                verts.Add(new Vector3(x, heightCurve.Evaluate(heightMap[x, y]) * heightScale, y));
+                verts.Add(new Vector3(x + 1, heightCurve.Evaluate(heightMap[x + 1, y + 1]) * heightScale, y + 1));
+                verts.Add(new Vector3(x + 1, heightCurve.Evaluate(heightMap[x + 1, y]) * heightScale, y));
+
+                verts.Add(new Vector3(x, heightCurve.Evaluate(heightMap[x, y]) * heightScale, y));
+                verts.Add(new Vector3(x, heightCurve.Evaluate(heightMap[x, y + 1]) * heightScale, y + 1));
+                verts.Add(new Vector3(x + 1, heightCurve.Evaluate(heightMap[x + 1, y + 1]) * heightScale, y + 1));
             }
         }
 
-        Mesh mesh = new Mesh();
+        return verts;
+    }
 
-        if (flatShading)
+    private static List<Vector2> GenerateUVs(List<Vector3> vertices, int width, int height)
+    {
+        List<Vector2> uv = new List<Vector2>(width * height);
+
+        foreach (Vector3 v in vertices)
         {
-            for (int i = 0; i < triangles.Length; i++)
+            uv.Add(new Vector2(v.x / (width - 1), v.z / (height - 1)));
+        }
+
+        return uv;
+    }
+
+    private static int[] GenerateTrianglesSmooth(int width, int height)
+    {
+        List<int> triangles = new List<int>();
+
+        for (int y = 0; y < height - 1; y++)
+        {
+            for (int x = 0; x < width - 1; x++)
             {
-                flatVertices.Add(smoothVertices[triangles[i]]);
-                triangles[i] = i;
+                triangles.Add(x + width * y);
+                triangles.Add(x + 1 + width * (y + 1));
+                triangles.Add(x + 1 + width * y);
 
-                Vector3 vertPos = flatVertices[i];
-
-                uv.Add(new Vector2(vertPos.x / (width - 1), vertPos.z / (height - 1)));
+                triangles.Add(x + width * y);
+                triangles.Add(x + width * (y + 1));
+                triangles.Add(x + 1 + width * (y + 1));
             }
-
-            mesh.SetVertices(flatVertices);
         }
-        else
+
+        return triangles.ToArray();
+    }
+
+    private static int[] GenerateTrianglesFlat(List<Vector3> vertices)
+    {
+        List<int> triangles = new List<int>();
+
+        for (int i = 0; i < vertices.Count; i++)
         {
-            mesh.SetVertices(smoothVertices);
+            triangles.Add(i);
         }
 
-        mesh.SetTriangles(triangles, 0);
-        mesh.SetUVs(0, uv);
-        mesh.RecalculateNormals();
+        return triangles.ToArray();
+    }
 
-        return mesh;
+    private static List<int[]> SeparateMeshSmooth(List<Vector3> vertices, int width, int height, int[] triangles, TerrainType[,] regionMap, TerrainType[] regions)
+    {
+        int regionCount = regions.Length;
+        List<List<int>> subMeshTriangles = new List<List<int>>();
+        for (int i = 0; i < regionCount; i++)
+        {
+            subMeshTriangles.Add(new List<int>());
+        }
+
+        for (int v = 0; v < triangles.Length; v+=6)
+        {
+            Vector3 vertex = vertices[triangles[v]];
+            int subMeshIndex = Array.IndexOf(regions, regionMap[Mathf.RoundToInt(vertex.x), Mathf.RoundToInt(vertex.z)]);
+
+            for (int i = 0; i < 6; i++)
+            {
+                subMeshTriangles[subMeshIndex].Add(triangles[v+i]);
+            }
+        }
+
+        List<int[]> newTriangles = new List<int[]>();
+
+        for (int i = 0; i < subMeshTriangles.Count; i++)
+        {
+            newTriangles.Add(subMeshTriangles[i].ToArray());
+        }
+
+        return newTriangles;
     }
 }

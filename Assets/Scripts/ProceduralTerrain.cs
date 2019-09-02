@@ -34,26 +34,33 @@ public class ProceduralTerrain : MonoBehaviour
 
     public void UpdateTerrain()
     {
+        float t = Time.realtimeSinceStartup;
+
         float[,] heightMap = Noise.GenerateNoiseMap(width, depth, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
-
-        Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, height, heightCurve, flatShading);
+        TerrainType[,] regionMap = HeightMapToTexture.GenerateRegionMap(heightMap, regions.ToArray());
+        texture = HeightMapToTexture.GenerateTexture(heightMap, regionMap, textureFilterMode);
+        Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, regionMap, regions.ToArray(), height, heightCurve, flatShading);
         terrainMesh.name = "Terrain";
-        texture = HeightMapToTexture.GenerateTexture(heightMap, regions.ToArray(), textureFilterMode);
-
-        Material mat = new Material(Shader.Find("Standard"));
-        mat.mainTexture = texture;
-        mat.SetFloat("_Glossiness", 0.1F);
-        mat.SetFloat("_Metallic", 0.0F);
 
         filter = GetComponent<MeshFilter>();
         col = GetComponent<MeshCollider>();
         rend = GetComponent<MeshRenderer>();
 
+        List<Material> mats = new List<Material>();
+        for (int subMesh = 0; subMesh < terrainMesh.subMeshCount; subMesh++)
+        {
+            Material material = regions[subMesh].material;
+            material.mainTexture = texture;
+            mats.Add(material);
+        }
+
+        rend.sharedMaterials = mats.ToArray();
         filter.mesh = terrainMesh;
         col.sharedMesh = terrainMesh;
-        rend.sharedMaterial = mat;
 
         transform.localScale = Vector3.one * scale;
+
+        print("Terrain Generated in " + (Time.realtimeSinceStartup - t) + "s.");
     }
 
     public void OnValidate()
