@@ -9,11 +9,11 @@ public static class HeightMapToTexture
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);
 
-        Color[] colourMap = new Color[width * height];
+        Color[] colourMap = new Color[(width - 1) * (height - 1)];
 
-        for (int y = 0; y < height; y++)
+        for (int y = 0; y < height - 1; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < width - 1; x++)
             {
                 float curHeight = heightMap[x, y];
 
@@ -21,7 +21,7 @@ public static class HeightMapToTexture
                 {
                     if (curHeight <= regions[i].height)
                     {
-                        colourMap[y * width + x] = regions[i].colour;
+                        colourMap[y * (width - 1) + x] = regions[i].colour;
                         break;
                     }
                 }
@@ -29,7 +29,7 @@ public static class HeightMapToTexture
         }
 
 
-        Texture2D tex = new Texture2D(width, height);
+        Texture2D tex = new Texture2D(width - 1, height - 1);
 
         tex.SetPixels(colourMap);
         tex.filterMode = filterMode;
