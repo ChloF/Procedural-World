@@ -19,6 +19,7 @@ public class ProceduralTerrain : MonoBehaviour
     public bool flatShading;
     public FilterMode textureFilterMode;
     public List<TerrainType> regions;
+
     public Texture2D texture;
 
     private MeshFilter filter;
@@ -67,19 +68,5 @@ public struct TerrainType
     public string name;
     public float height;
     public Color colour;
-
-    public void SetName(string newName)
-    {
-        name = newName;
-    }
-
-    public void SetHeight(float newHeight)
-    {
-        height = newHeight;
-    }
-
-    public void SetColour(Color newColour)
-    {
-        colour = newColour;
-    }
+    public Material material;
 }

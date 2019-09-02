@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
-using UnityEditorInternal;
-
 
 [CustomEditor(typeof(ProceduralTerrain))]
 [CanEditMultipleObjects]
@@ -105,7 +101,8 @@ public class ProceduralTerrainEditor : Editor
                 EditorGUILayout.BeginHorizontal();
 
                 modifiedRegion.height = EditorGUILayout.Slider(terrain.regions[i].height, 0, 1);
-                modifiedRegion.colour = EditorGUILayout.ColorField(terrain.regions[i].colour);
+                modifiedRegion.colour = EditorGUILayout.ColorField(terrain.regions[i].colour);  
+                modifiedRegion.material = (Material)EditorGUILayout.ObjectField(terrain.regions[i].material, typeof(Material));
 
                 EditorGUILayout.EndHorizontal();
 
@@ -130,20 +127,5 @@ public class ProceduralTerrainEditor : Editor
             terrain.OnValidate();
         }
 
-    }
-
-    void NoiseInspector()
-    {
-        
-    }
-
-    void RenderingInspector()
-    {
-
-    }
-
-    void RegionInspector()
-    {
-        
     }
 }
