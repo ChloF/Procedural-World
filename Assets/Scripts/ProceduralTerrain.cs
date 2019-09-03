@@ -76,4 +76,12 @@ public struct TerrainType
     public float height;
     public Color colour;
     public Material material;
+
+    public TerrainType(string _name, float _height, Color _colour, Material _material)
+    {
+        name = _name;
+        height = _height;
+        colour = _colour;
+        material = _material;
+    }
 }
