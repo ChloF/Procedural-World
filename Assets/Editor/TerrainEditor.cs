@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 [CustomEditor(typeof(ProceduralTerrain))]
 [CanEditMultipleObjects]
@@ -78,25 +79,21 @@ public class ProceduralTerrainEditor : Editor
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("+", GUILayout.Width(60)))
             {
-                terrain.regions.Add(new TerrainType());
-            }
-
-            if (GUILayout.Button("-", GUILayout.Width(60)))
-            {
-                terrain.regions.Remove(terrain.regions[terrain.regions.Count - 1]);
+                Material mat = new Material(Shader.Find("Standard"));
+                terrain.regions.Add(new TerrainType("New Region", 1.0f, Color.black, mat));
             }
 
             GUILayout.Space(20);
 
             EditorGUILayout.EndHorizontal();
 
+            List<TerrainType> modifiedRegionList = new List<TerrainType>();
 
             for (int i = 0; i < terrain.regions.Count; i++)
             {
-                TerrainType modifiedRegion = new TerrainType
-                {
-                    name = EditorGUILayout.TextField(terrain.regions[i].name, GUILayout.Width(100))
-                };
+                TerrainType modifiedRegion = new TerrainType();
+
+                modifiedRegion.name = EditorGUILayout.TextField(terrain.regions[i].name, GUILayout.Width(100));
 
                 EditorGUILayout.BeginHorizontal();
 
@@ -104,10 +101,15 @@ public class ProceduralTerrainEditor : Editor
                 modifiedRegion.colour = EditorGUILayout.ColorField(terrain.regions[i].colour);  
                 modifiedRegion.material = (Material)EditorGUILayout.ObjectField(terrain.regions[i].material, typeof(Material));
 
-                EditorGUILayout.EndHorizontal();
+                if (!GUILayout.Button("X", GUILayout.Width(30)))
+                {
+                    modifiedRegionList.Add(modifiedRegion);
+                }
 
-                terrain.regions[i] = modifiedRegion;
+                EditorGUILayout.EndHorizontal();
             }
+
+            terrain.regions = modifiedRegionList;
 
             GUILayout.Space(10);
         }
