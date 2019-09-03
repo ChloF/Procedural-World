@@ -101,7 +101,7 @@ Material:
     - _UseUIAlphaClip: 0
     - _WaveHeight: 0
     - _WaveSpeed: 2
-    - _WaveThickness: 0.05
+    - _WaveThickness: 0.065
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0, g: 0.75521344, b: 0.9339623, a: 1}
