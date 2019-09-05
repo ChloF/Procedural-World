@@ -7,22 +7,27 @@ public static class HeightMapToMesh
 {
     public static Mesh GenerateMesh(float[,] heightMap, TerrainType[,] regionMap, TerrainType[] regions, float heightScale, AnimationCurve heightCurve, bool flatShading)
     {
+        //Get the width and height of the heightmap.
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);
-
+        
+        //Create the vertices differently depending on whether the mesh is flat or smooth.
         List<Vector3> vertices = flatShading ? GenerateVerticesFlat(heightMap, width, height, heightScale, heightCurve) : GenerateVerticesSmooth(heightMap, width, height, heightScale, heightCurve);
         List<Vector2> uv = GenerateUVs(vertices, width, height);
         int[] triangles = flatShading ? GenerateTrianglesFlat(vertices) : GenerateTrianglesSmooth(width, height);
-
+        
+        //Create one submesh for each region in the terrain.
         int subMeshCount = regions.Length;
-
-        List<int[]> subMeshTriangles = SeparateMeshSmooth(vertices, width, height, triangles, regionMap, regions);
+        
+        //Split mesh into submeshes based on region.
+        List<int[]> subMeshTriangles = SeparateMesh(vertices, width, height, triangles, regionMap, regions);
 
         Mesh mesh = new Mesh();
         mesh.SetVertices(vertices);
 
         mesh.subMeshCount = subMeshCount;
-
+        
+        //Add the triangles from each submesh to the mesh.
         for (int i = 0; i < subMeshCount; i++)
         {
             mesh.SetTriangles(subMeshTriangles[i], i);
@@ -42,6 +47,7 @@ public static class HeightMapToMesh
         {
             for (int x = 0; x < width; x++)
             {
+                //Get the height of each vertext from the Height Map.
                 float vertexHeight = heightCurve.Evaluate(heightMap[x, y]) * heightScale;
 
                 verts.Add(new Vector3(x, vertexHeight, y));
@@ -59,6 +65,7 @@ public static class HeightMapToMesh
         {
             for (int x = 0; x < width - 1; x++)
             {
+                //Add vertices in triangle order, ensures 3 unique vertices per triangle.
                 verts.Add(new Vector3(x, heightCurve.Evaluate(heightMap[x, y]) * heightScale, y));
                 verts.Add(new Vector3(x + 1, heightCurve.Evaluate(heightMap[x + 1, y + 1]) * heightScale, y + 1));
                 verts.Add(new Vector3(x + 1, heightCurve.Evaluate(heightMap[x + 1, y]) * heightScale, y));
@@ -117,7 +124,7 @@ public static class HeightMapToMesh
         return triangles.ToArray();
     }
 
-    private static List<int[]> SeparateMeshSmooth(List<Vector3> vertices, int width, int height, int[] triangles, TerrainType[,] regionMap, TerrainType[] regions)
+    private static List<int[]> SeparateMesh(List<Vector3> vertices, int width, int height, int[] triangles, TerrainType[,] regionMap, TerrainType[] regions)
     {
         int regionCount = regions.Length;
         List<List<int>> subMeshTriangles = new List<List<int>>();
