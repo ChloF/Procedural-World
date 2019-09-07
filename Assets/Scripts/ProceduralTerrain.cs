@@ -20,7 +20,7 @@ public class ProceduralTerrain : MonoBehaviour
     public FilterMode textureFilterMode;
     public List<TerrainType> regions;
     public Texture2D texture;
-
+    public float[,] heightMap;
     private MeshFilter filter;
     private MeshCollider col;
     private MeshRenderer rend;
@@ -33,7 +33,7 @@ public class ProceduralTerrain : MonoBehaviour
 
     public void UpdateTerrain()
     {
-        float[,] heightMap = Noise.GenerateNoiseMap(width, depth, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
+        heightMap = Noise.GenerateNoiseMap(width, depth, noiseScale, noiseOctaves, noisePersistence, noiseLacunarity, seed, noiseOffset);
 
         Mesh terrainMesh = HeightMapToMesh.GenerateMesh(heightMap, height, heightCurve, flatShading);
         terrainMesh.name = "Terrain";
