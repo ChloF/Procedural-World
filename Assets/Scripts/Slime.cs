@@ -5,6 +5,12 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Slime : MonoBehaviour
 {
+    [Range(0, 1)]
+    public float hunger = 0;
+    [Range(0, 1)]
+    public float thirst = 0;
+    public float hungerRate;
+    public float thirstRate;
     public float horizontalForce;
     public float verticalForce;
     public bool alive = true;
@@ -22,7 +28,6 @@ public class Slime : MonoBehaviour
     }
 
     private LayerMask environmentMask;
-    private WaitForSeconds tick;
     private Rigidbody rb;
 
     private void Start()
@@ -53,6 +58,14 @@ public class Slime : MonoBehaviour
 
     private void OnTick()
     {
+        hunger += hungerRate / tickRate;
+        thirst += thirstRate / tickRate;
+
+        if (hunger >= 1 || thirst >= 1)
+        {
+            alive = false;
+        }
+
         if(Random.value < moveChance && IsGrounded)
         {
             bool canMoveInDirection = false;
