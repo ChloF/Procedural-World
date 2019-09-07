@@ -27,6 +27,7 @@ public class Slime : MonoBehaviour
         }
     }
 
+    private GameObject[] food;
     private LayerMask environmentMask;
     private Rigidbody rb;
 
@@ -34,7 +35,9 @@ public class Slime : MonoBehaviour
     {
         alive = true;
         environmentMask = ~LayerMask.NameToLayer("Environment");
+
         rb = GetComponent<Rigidbody>();
+
         StartCoroutine(Live());
     }
 
@@ -58,6 +61,8 @@ public class Slime : MonoBehaviour
 
     private void OnTick()
     {
+        food = GameObject.FindGameObjectsWithTag("Food");
+
         hunger += hungerRate / tickRate;
         thirst += thirstRate / tickRate;
 
@@ -68,19 +73,48 @@ public class Slime : MonoBehaviour
 
         if(Random.value < moveChance && IsGrounded)
         {
-            bool canMoveInDirection = false;
-            Vector3 hopDir = Vector3.zero;
+            bool randomDirValid = false;
+            Vector3 randomDir = Vector3.zero;
 
-            while (!canMoveInDirection)
+            while (!randomDirValid)
             {
                 float theta = Random.value * 2 * Mathf.PI;
-                hopDir = new Vector3(Mathf.Cos(theta), 0, Mathf.Sin(theta));
+                randomDir = new Vector3(Mathf.Cos(theta), 0, Mathf.Sin(theta));
 
-                Ray visionRay = new Ray(transform.position + Vector3.up, hopDir);
-                canMoveInDirection = !Physics.Raycast(visionRay, visionDistance, environmentMask);
-                Debug.DrawRay(transform.position + Vector3.up, hopDir * visionDistance, canMoveInDirection ? Color.green : Color.red, 1f);
+                Ray visionRay = new Ray(transform.position + Vector3.up, randomDir);
+                randomDirValid = !Physics.Raycast(visionRay, visionDistance, environmentMask);
+                Debug.DrawRay(transform.position + Vector3.up, randomDir * visionDistance, randomDirValid ? Color.green : Color.red, 1f);
             }
 
+            Vector3 foodDir = Vector3.zero;
+            float foodDist = float.MaxValue;
+
+            for (int i = 0; i < food.Length; i++)
+            {
+                if(!Physics.Linecast(transform.position, food[i].transform.position, environmentMask))
+                {
+                    float newFoodDist = Vector3.SqrMagnitude(food[i].transform.position - transform.position);
+
+                    if (newFoodDist < foodDist)
+                    {
+                        foodDir = food[i].transform.position - transform.position;
+                        foodDist = newFoodDist;
+                    }
+                }
+            }
+
+            Vector3 hopDir = Vector3.zero;
+
+            if(foodDist < 2)
+            {
+                hopDir = foodDir;
+            }
+            else
+            {
+                hopDir = Vector3.Lerp(randomDir, foodDir, hunger * hunger);
+            }
+
+            hopDir = hopDir.normalized;
             Hop(hopDir, horizontalForce, verticalForce);
         }
     }
@@ -88,6 +122,13 @@ public class Slime : MonoBehaviour
     void Hop(Vector3 direction, float h, float v)
     {
         rb.AddForce(direction.normalized * h + Vector3.up * v, ForceMode.Impulse);
+    }
+
+    public void Eat(float hungerValue)
+    {
+        hunger -= hungerValue;
+
+        hunger = hunger > 0 ? hunger : 0;
     }
 
     private void OnDrawGizmosSelected()
