@@ -44,50 +44,72 @@ public class Slime : Entity
 
         if(Random.value < moveChance && IsGrounded)
         {
-            bool randomDirValid = false;
-            Vector3 randomDir = Vector3.zero;
-
-            while (!randomDirValid)
-            {
-                float theta = Random.value * 2 * Mathf.PI;
-                randomDir = new Vector3(Mathf.Cos(theta), 0, Mathf.Sin(theta));
-
-                Ray visionRay = new Ray(transform.position + Vector3.up, randomDir);
-                randomDirValid = !Physics.Raycast(visionRay, visionDistance, environmentMask);
-                Debug.DrawRay(transform.position + Vector3.up, randomDir * visionDistance, randomDirValid ? Color.green : Color.red, 1f);
-            }
-
-            Vector3 foodDir = Vector3.zero;
-            float foodDist = float.MaxValue;
-
-            for (int i = 0; i < food.Length; i++)
-            {
-                if(!Physics.Linecast(transform.position, food[i].transform.position, environmentMask))
-                {
-                    float newFoodDist = Vector3.SqrMagnitude(food[i].transform.position - transform.position);
-
-                    if (newFoodDist < foodDist)
-                    {
-                        foodDir = food[i].transform.position - transform.position;
-                        foodDist = newFoodDist;
-                    }
-                }
-            }
-
-            Vector3 hopDir = Vector3.zero;
-
-            if(foodDist < 2)
-            {
-                hopDir = foodDir;
-            }
-            else
-            {
-                hopDir = Vector3.Lerp(randomDir, foodDir, hunger * hunger);
-            }
-
-            hopDir = hopDir.normalized;
+            Vector3 hopDir = GetMoveDirection();
             Hop(hopDir, horizontalForce, verticalForce);
         }
+    }
+
+    private Vector3 GetMoveDirection()
+    {
+        bool randomDirValid = false;
+        Vector3 randomDir = Vector3.zero;
+
+        while (!randomDirValid)
+        {
+            randomDir = RandomDirection();
+
+            randomDirValid = !CheckDirection(randomDir);
+            Debug.DrawRay(transform.position + Vector3.up, randomDir * visionDistance, randomDirValid ? Color.green : Color.red, 1f);
+        }
+
+        Vector3 foodDir = FindClosestFoodDirection();
+
+        Vector3 hopDir = Vector3.zero;
+
+        if (foodDir.sqrMagnitude < 3)
+        {
+            hopDir = foodDir;
+        }
+        else
+        {
+            hopDir = Vector3.Lerp(randomDir, foodDir.normalized, hunger * hunger);
+        }
+
+        return hopDir.normalized;
+    }
+
+    private Vector3 RandomDirection()
+    {
+        float theta = Random.value * 2 * Mathf.PI;
+        return new Vector3(Mathf.Cos(theta), 0, Mathf.Sin(theta));
+    }
+
+    private bool CheckDirection(Vector3 direction)
+    {
+        Ray visionRay = new Ray(transform.position + Vector3.up, direction);
+        return !Physics.Raycast(visionRay, visionDistance, environmentMask);
+    }
+
+    private Vector3 FindClosestFoodDirection()
+    {
+        Vector3 foodDir = Vector3.zero;
+        float foodDist = float.MaxValue;
+
+        for (int i = 0; i < food.Length; i++)
+        {
+            if (!Physics.Linecast(transform.position, food[i].transform.position, environmentMask))
+            {
+                float newFoodDist = Vector3.SqrMagnitude(food[i].transform.position - transform.position);
+
+                if (newFoodDist < foodDist)
+                {
+                    foodDir = food[i].transform.position - transform.position;
+                    foodDist = newFoodDist;
+                }
+            }
+        }
+
+        return foodDir;
     }
 
     void Hop(Vector3 direction, float h, float v)
