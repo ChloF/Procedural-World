@@ -22,10 +22,10 @@ public class Food : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Slime slime = other.GetComponentInParent<Slime>();
-        if (slime)
+        Entity entity = other.GetComponentInParent<Entity>();
+        if (entity)
         {
-            slime.Eat(hungerValue);
+            entity.Eat(hungerValue);
 
             StartCoroutine(Eaten(other.transform));
         }

@@ -3,47 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Slime : MonoBehaviour
+public class Slime : Entity
 {
-    [Range(0, 1)]
-    public float hunger = 0;
-    [Range(0, 1)]
-    public float thirst = 0;
-    public float hungerRate;
     public float horizontalForce;
     public float verticalForce;
-    public bool alive = true;
     public float moveChance;
-    public float tickRate = 10;
-    public float visionDistance;
-    public float groundCheckDist;
     public bool displayVisionRadius;
     public int visionRadiusDisplayVertices;
-    public bool IsGrounded
-    {
-        get
-        {
-            Ray ray = new Ray(transform.position, Vector3.down);
-            return Physics.Raycast(ray, groundCheckDist, environmentMask);
-        }
-    }
 
     private GameObject[] food;
-    private LayerMask environmentMask;
     private LineRenderer lr;
     private Rigidbody rb;
 
-    private void Start()
+    public override void Start()
     {
-        alive = true;
-        environmentMask = ~LayerMask.NameToLayer("Environment");
         lr = GetComponent<LineRenderer>();
         rb = GetComponent<Rigidbody>();
 
-        StartCoroutine(Live());
+        base.Start();
     }
 
-    private void Update()
+    public void Update()
     {
         if (displayVisionRadius)
         {
@@ -56,34 +36,11 @@ public class Slime : MonoBehaviour
         }
     }
 
-    IEnumerator Live()
+    public override void OnTick()
     {
-        while (alive)
-        {
-            OnTick();
-            yield return new WaitForSeconds(1 / tickRate);
-        }
+        base.OnTick();
 
-        StartCoroutine(Die());
-        yield return null;
-    }
-
-    IEnumerator Die()
-    {
-        Destroy(this.gameObject);
-        yield return null;
-    }
-
-    private void OnTick()
-    {
         food = GameObject.FindGameObjectsWithTag("Food");
-
-        hunger += hungerRate / tickRate;
-
-        if (hunger >= 1)
-        {
-            alive = false;
-        }
 
         if(Random.value < moveChance && IsGrounded)
         {
@@ -136,13 +93,6 @@ public class Slime : MonoBehaviour
     void Hop(Vector3 direction, float h, float v)
     {
         rb.AddForce(direction.normalized * h + Vector3.up * v, ForceMode.Impulse);
-    }
-
-    public void Eat(float hungerValue)
-    {
-        hunger -= hungerValue;
-
-        hunger = hunger > 0 ? hunger : 0;
     }
 
     void DrawVisionRadius()
