@@ -10,7 +10,6 @@ public class Slime : MonoBehaviour
     [Range(0, 1)]
     public float thirst = 0;
     public float hungerRate;
-    public float thirstRate;
     public float horizontalForce;
     public float verticalForce;
     public bool alive = true;
@@ -18,6 +17,7 @@ public class Slime : MonoBehaviour
     public float tickRate = 10;
     public float visionDistance;
     public float groundCheckDist;
+    public bool displayVisionRadius;
     public int visionRadiusDisplayVertices;
     public bool IsGrounded
     {
@@ -45,7 +45,15 @@ public class Slime : MonoBehaviour
 
     private void Update()
     {
-        DrawVisionRadius();
+        if (displayVisionRadius)
+        {
+            lr.enabled = true;
+            DrawVisionRadius();
+        }
+        else
+        {
+            lr.enabled = false;
+        }
     }
 
     IEnumerator Live()
@@ -71,9 +79,8 @@ public class Slime : MonoBehaviour
         food = GameObject.FindGameObjectsWithTag("Food");
 
         hunger += hungerRate / tickRate;
-        thirst += thirstRate / tickRate;
 
-        if (hunger >= 1 || thirst >= 1)
+        if (hunger >= 1)
         {
             alive = false;
         }
