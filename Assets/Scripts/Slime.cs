@@ -18,6 +18,7 @@ public class Slime : MonoBehaviour
     public float tickRate = 10;
     public float visionDistance;
     public float groundCheckDist;
+    public int visionRadiusDisplayVertices;
     public bool IsGrounded
     {
         get
@@ -29,16 +30,22 @@ public class Slime : MonoBehaviour
 
     private GameObject[] food;
     private LayerMask environmentMask;
+    private LineRenderer lr;
     private Rigidbody rb;
 
     private void Start()
     {
         alive = true;
         environmentMask = ~LayerMask.NameToLayer("Environment");
-
+        lr = GetComponent<LineRenderer>();
         rb = GetComponent<Rigidbody>();
 
         StartCoroutine(Live());
+    }
+
+    private void Update()
+    {
+        DrawVisionRadius();
     }
 
     IEnumerator Live()
@@ -131,8 +138,14 @@ public class Slime : MonoBehaviour
         hunger = hunger > 0 ? hunger : 0;
     }
 
-    private void OnDrawGizmosSelected()
+    void DrawVisionRadius()
     {
-        Gizmos.DrawWireSphere(transform.position, visionDistance);
+        lr.positionCount = visionRadiusDisplayVertices;
+
+        for (int i = 0; i < visionRadiusDisplayVertices; i++)
+        {
+            Vector3 point = visionDistance * new Vector3(Mathf.Cos(i * 2 * Mathf.PI / visionRadiusDisplayVertices), 0, Mathf.Sin(i * 2 * Mathf.PI / visionRadiusDisplayVertices));
+            lr.SetPosition(i, point);
+        }
     }
 }
