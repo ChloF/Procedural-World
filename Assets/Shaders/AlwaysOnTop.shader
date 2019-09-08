@@ -8,6 +8,7 @@
     {
 		ZWrite Off
 		ZTest Always
+		Cull Off
         Tags { "RenderType"="Opaque" }
         LOD 100
 
