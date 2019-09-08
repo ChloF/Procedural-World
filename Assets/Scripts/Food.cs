@@ -7,13 +7,17 @@ public class Food : MonoBehaviour
     public float hungerValue;
     public float eatAnimationDuration;
     public float size;
+    public float maxHeight;
+    public float minHeight;
+
+    public static List<Food> allFood = new List<Food>();
 
     private void Start()
     {
         LayerMask environmentMask = ~LayerMask.NameToLayer("Environment");
         Ray ray = new Ray(transform.position, Vector3.down);
         RaycastHit hit;
-
+        allFood.Add(this);
         if (Physics.Raycast(ray, out hit, float.MaxValue, environmentMask))
         {
             transform.position = hit.point + Vector3.up * size / 2;
@@ -54,7 +58,7 @@ public class Food : MonoBehaviour
 
             yield return null;
         }
-
+        allFood.Remove(this);
         Destroy(this.gameObject);
     }
 }
