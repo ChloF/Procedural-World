@@ -42,7 +42,7 @@ public class Slime : Entity
 
         food = GameObject.FindGameObjectsWithTag("Food");
 
-        if(Random.value < moveChance && IsGrounded)
+        if(Random.value < moveChance / tickRate && IsGrounded)
         {
             Vector3 hopDir = GetMoveDirection();
             Hop(hopDir, horizontalForce, verticalForce);
@@ -58,7 +58,7 @@ public class Slime : Entity
         {
             randomDir = RandomDirection();
 
-            randomDirValid = !CheckDirection(randomDir);
+            randomDirValid = CheckDirection(randomDir);
             Debug.DrawRay(transform.position + Vector3.up, randomDir * visionDistance, randomDirValid ? Color.green : Color.red, 1f);
         }
 
@@ -66,7 +66,11 @@ public class Slime : Entity
 
         Vector3 hopDir = Vector3.zero;
 
-        if (foodDir.sqrMagnitude < 3)
+        if(foodDir == Vector3.zero)
+        {
+            hopDir = randomDir;
+        }
+        else if (foodDir.sqrMagnitude < 3)
         {
             hopDir = foodDir;
         }
