@@ -11,7 +11,6 @@ public class Slime : Entity
     public bool displayVisionRadius;
     public int visionRadiusDisplayVertices;
 
-    private GameObject[] food;
     private LineRenderer lr;
     private Rigidbody rb;
 
@@ -39,8 +38,6 @@ public class Slime : Entity
     public override void OnTick()
     {
         base.OnTick();
-
-        food = GameObject.FindGameObjectsWithTag("Food");
 
         if(Random.value < moveChance / tickRate && IsGrounded)
         {
@@ -99,15 +96,15 @@ public class Slime : Entity
         Vector3 foodDir = Vector3.zero;
         float foodDist = float.MaxValue;
 
-        for (int i = 0; i < food.Length; i++)
+        for (int i = 0; i < Food.allFood.Count; i++)
         {
-            if (!Physics.Linecast(transform.position, food[i].transform.position, environmentMask))
+            if (!Physics.Linecast(transform.position, Food.allFood[i].transform.position, environmentMask))
             {
-                float newFoodDist = Vector3.SqrMagnitude(food[i].transform.position - transform.position);
+                float newFoodDist = Vector3.SqrMagnitude(Food.allFood[i].transform.position - transform.position);
 
                 if (newFoodDist < foodDist)
                 {
-                    foodDir = food[i].transform.position - transform.position;
+                    foodDir = Food.allFood[i].transform.position - transform.position;
                     foodDist = newFoodDist;
                 }
             }
