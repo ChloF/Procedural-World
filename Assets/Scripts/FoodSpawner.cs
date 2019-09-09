@@ -8,6 +8,7 @@ public class FoodSpawner : MonoBehaviour
     public GameObject[] foodTypes;
     public float[] spawnRates;
     public int maxSpawnPointTrials;
+    public int maxFood;
     public float xMin;
     public float xMax;
     public float yMin;
@@ -22,14 +23,18 @@ public class FoodSpawner : MonoBehaviour
     {
         while(true)
         {
-            for (int i = 0; i < foodTypes.Length; i++)
+            if (Food.allFood.Count < maxFood)
             {
-                if (Random.value < spawnRates[i] / tickRate)
+                for (int i = 0; i < foodTypes.Length; i++)
                 {
-                    SpawnFood(foodTypes[i]);
+                    if (Random.value < spawnRates[i] / tickRate)
+                    {
+                        SpawnFood(foodTypes[i]);
+                    }
                 }
             }
-            yield return new WaitForSeconds(1/tickRate);
+
+            yield return new WaitForSeconds(1 / tickRate);
         }
     }
 

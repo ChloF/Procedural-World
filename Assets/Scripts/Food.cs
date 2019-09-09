@@ -18,10 +18,29 @@ public class Food : MonoBehaviour
         Ray ray = new Ray(transform.position, Vector3.down);
         RaycastHit hit;
         allFood.Add(this);
+
         if (Physics.Raycast(ray, out hit, float.MaxValue, environmentMask))
         {
             transform.position = hit.point + Vector3.up * size / 2;
         }
+
+        StartCoroutine(Spawned());
+    }
+
+    private IEnumerator Spawned()
+    {
+        float t = 0;
+
+        while(t < 1)
+        {
+            transform.localScale = t * Vector3.one;
+
+            t += Time.deltaTime;
+
+            yield return null;
+        }
+
+        yield return null;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -60,5 +79,7 @@ public class Food : MonoBehaviour
         }
         allFood.Remove(this);
         Destroy(this.gameObject);
+
+        yield return null;
     }
 }
