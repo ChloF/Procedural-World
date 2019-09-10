@@ -15,6 +15,7 @@ public class Entity : MonoBehaviour
     {
         get
         {
+            //Raycast to check for the ground.
             Ray ray = new Ray(transform.position, Vector3.down);
             return Physics.Raycast(ray, groundCheckDistance, environmentMask);
         }
@@ -25,16 +26,18 @@ public class Entity : MonoBehaviour
 
     public virtual void Start()
     {
-        StartCoroutine(Live());
         environmentMask = ~LayerMask.NameToLayer("Environment");
+
+        StartCoroutine(Live());
     }
 
-    IEnumerator Live()
+    public virtual IEnumerator Live()
     {
         alive = true;
-
+        
         while (alive)
         {
+            //Call OnTick tickRate times per second.
             OnTick();
             yield return new WaitForSeconds(1 / tickRate);
         }
@@ -45,22 +48,25 @@ public class Entity : MonoBehaviour
 
     public virtual void OnTick()
     {
+        //Increase hunger over time.
         hunger += hungerRate / tickRate;
-
+        
+        //Die in the event of starvation.
         if (hunger >= 1)
         {
             alive = false;
         }
     }
 
-    public void Eat(float hungerValue)
+    public virtual void Eat(float hungerValue)
     {
         hunger -= hungerValue;
-
+        
+        //Hunger can not go below 0.
         hunger = hunger > 0 ? hunger : 0;
     }
 
-    IEnumerator Die()
+    public virtual IEnumerator Die()
     {
         Destroy(this.gameObject);
         yield return null;
