@@ -9,24 +9,17 @@ public class Food : MonoBehaviour
     public float size;
     public float maxHeight;
     public float minHeight;
-
+	
+	//Static list of all food objects to be used by entities.
     public static List<Food> allFood = new List<Food>();
 
     private void Start()
     {
-        LayerMask environmentMask = ~LayerMask.NameToLayer("Environment");
-        Ray ray = new Ray(transform.position, Vector3.down);
-        RaycastHit hit;
         allFood.Add(this);
-
-        if (Physics.Raycast(ray, out hit, float.MaxValue, environmentMask))
-        {
-            transform.position = hit.point + Vector3.up * size / 2;
-        }
-
         StartCoroutine(Spawned());
     }
-
+	
+	//Play a short animation when spawning in.
     private IEnumerator Spawned()
     {
         float t = 0;
@@ -53,13 +46,15 @@ public class Food : MonoBehaviour
             StartCoroutine(Eaten(other.transform));
         }
     }
-
+	
+	//Play a short animation when being Eaten.
     private IEnumerator Eaten(Transform to)
     {
         float t = 0;
 
         Vector3 from = transform.position;
-
+		
+		//Go to the entity, while getting smaller.
         while (t < .5)
         {
             transform.position = Vector3.Lerp(from, to.position, 2*t);
@@ -68,7 +63,8 @@ public class Food : MonoBehaviour
 
             yield return null;
         }
-
+		
+		//Continue getting smaller while inside the entity.
         while (t < 1)
         {
             transform.position = to.position;
@@ -77,6 +73,7 @@ public class Food : MonoBehaviour
 
             yield return null;
         }
+		
         allFood.Remove(this);
         Destroy(this.gameObject);
 
