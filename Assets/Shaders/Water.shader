@@ -14,6 +14,7 @@
 
     SubShader
     {
+    	//Set up shader for transparency.
 		ZWrite Off
 		Blend SrcAlpha OneMinusSrcAlpha
         Tags { "Queue" = "Transparent" "RenderType" = "Transparent"}
@@ -47,7 +48,8 @@
 		UNITY_INSTANCING_BUFFER_START(Props)
 		// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
-
+		
+		//Gets a random float2.
 		inline float2 randomVector(float2 UV, float Offset)
 		{
 			float2x2 m = float2x2(15.27, 47.63, 99.41, 89.98);
@@ -55,6 +57,7 @@
 			return float2(sin(UV.y*+Offset)*0.5 + 0.5, cos(UV.x*Offset)*0.5 + 0.5);
 		}
 		
+		//Applies a radial shear to the UV coordinates.
 		float2 radialShear(float2 UV, float2 Center, float Strength, float2 Offset)
 		{
 			float2 delta = UV - Center;
@@ -62,7 +65,8 @@
 			float2 delta_offset = delta2 * Strength;
 			return UV + float2(delta.y, -delta.x) * delta_offset + Offset;
 		}
-
+		
+		//Generates a voronoi noise texture.
 		float voronoiNoise(float2 UV, float AngleOffset, float CellDensity)
 		{
 			float2 g = floor(UV * CellDensity);
@@ -89,7 +93,8 @@
 
 			return Out;
 		}
-
+		
+		//Get a random direction for the gradient noise.
 		float2 gradientNoiseDir(float2 p)
 		{
 			p = p % 289;
@@ -98,7 +103,8 @@
 			x = frac(x / 41) * 2 - 1;
 			return normalize(float2(x - floor(x + 0.5), abs(x) - 0.5));
 		}
-
+		
+		//Create a gradient noise texture.
 		float gradientNoise(float2 UV, float Scale)
 		{
 			float2 p = UV * Scale;
@@ -113,24 +119,23 @@
 
 			return lerp(lerp(d00, d01, fp.y), lerp(d10, d11, fp.y), fp.x) + 0.5;
 		}
-
+		
+		//Apply a height offset to each vertex.
 		void vert(inout appdata_full v)
 		{
 			float2 offsetUV = v.texcoord + (_Time.y * _WaveSpeed * 1/_CellDensity);
 			
 			v.vertex.xyz += v.normal * (gradientNoise(offsetUV, _CellDensity) - 0.5) * _WaveHeight;
 		}
-
+		
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-			float noise = 0;
-			float cells = 0;
-
+			//Create a voronoi texture for the waves.
 			float2 radialShearUV = radialShear(IN.uv_MainTex, float2(0.5, 0.5), 1, float2(0, 0));
 			
-			noise = voronoiNoise(radialShearUV, _WaveSpeed * _Time.y, _CellDensity);
+			float noise = voronoiNoise(radialShearUV, _WaveSpeed * _Time.y, _CellDensity);
 			noise = pow(noise, 1/_WaveThickness);
-
+			
             fixed4 waves = float4(noise, noise, noise, 1);
 
 			o.Albedo = waves * _WaveColour + _Colour * tex2D(_MainTex, IN.uv_MainTex);
