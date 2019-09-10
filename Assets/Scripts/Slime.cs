@@ -7,11 +7,11 @@ public class Slime : Entity
 {
     public float horizontalForce;
     public float verticalForce;
-    public float moveChance;
+    public float moveRate;
     public bool displayVisionRadius;
     public int visionRadiusDisplayVertices;
 
-    private LineRenderer lr;
+    private LineRenderer lr; //LineRenderer to draw circle visualising vision distance.
     private Rigidbody rb;
 
     public override void Start()
@@ -38,8 +38,9 @@ public class Slime : Entity
     public override void OnTick()
     {
         base.OnTick();
-
-        if(Random.value < moveChance / tickRate && IsGrounded)
+        
+        //Move if on the ground, averaging moveRate movements per second.
+        if(Random.value < moveRate / tickRate && IsGrounded)
         {
             Vector3 hopDir = GetMoveDirection();
             Hop(hopDir, horizontalForce, verticalForce);
@@ -48,31 +49,34 @@ public class Slime : Entity
 
     private Vector3 GetMoveDirection()
     {
+        //Get a random direction, checking to make sure it isn't obstructed.
         bool randomDirValid = false;
         Vector3 randomDir = Vector3.zero;
 
         while (!randomDirValid)
         {
             randomDir = RandomDirection();
-
             randomDirValid = CheckDirection(randomDir);
-            Debug.DrawRay(transform.position + Vector3.up, randomDir * visionDistance, randomDirValid ? Color.green : Color.red, 1f);
         }
-
+        
+        //Get the direction of the closest piece of food.
         Vector3 foodDir = FindClosestFoodDirection();
 
+        //Set hopDir based on the other directions.
         Vector3 hopDir = Vector3.zero;
-
         if(foodDir == Vector3.zero)
         {
+            //If no food is found, move in the random direction.
             hopDir = randomDir;
         }
         else if (foodDir.sqrMagnitude < 3)
         {
+            //If close to food, hop towards the food.
             hopDir = foodDir;
         }
         else
         {
+            //If not close enough to food, interpolate between random direction and food direction, based on hunger.
             hopDir = Vector3.Lerp(randomDir, foodDir.normalized, hunger * hunger);
         }
 
@@ -81,10 +85,13 @@ public class Slime : Entity
 
     private Vector3 RandomDirection()
     {
+        //Pick a random angle.
         float theta = Random.value * 2 * Mathf.PI;
+        //Find the point on the unit circle correspoding to that angle.
         return new Vector3(Mathf.Cos(theta), 0, Mathf.Sin(theta));
     }
 
+    //Checks if the slime can move in a certain direction.
     private bool CheckDirection(Vector3 direction)
     {
         Ray visionRay = new Ray(transform.position + Vector3.up, direction);
@@ -98,10 +105,11 @@ public class Slime : Entity
 
         for (int i = 0; i < Food.allFood.Count; i++)
         {
+            //Linecast to the food, to check if there is a path to the food.
             if (!Physics.Linecast(transform.position, Food.allFood[i].transform.position, environmentMask))
             {
                 float newFoodDist = Vector3.SqrMagnitude(Food.allFood[i].transform.position - transform.position);
-
+                //Compare the distance of this food to the distance of the current closest food.
                 if (newFoodDist < foodDist)
                 {
                     foodDir = Food.allFood[i].transform.position - transform.position;
@@ -121,10 +129,13 @@ public class Slime : Entity
     void DrawVisionRadius()
     {
         lr.positionCount = visionRadiusDisplayVertices;
-
+        
+        //Add visionRadiusDisplayVertices points, evenly spaced around a circle.
         for (int i = 0; i < visionRadiusDisplayVertices; i++)
         {
-            Vector3 point = visionDistance * new Vector3(Mathf.Cos(i * 2 * Mathf.PI / visionRadiusDisplayVertices), 0, Mathf.Sin(i * 2 * Mathf.PI / visionRadiusDisplayVertices));
+            float x = Mathf.Cos(i * 2 * Mathf.PI / visionRadiusDisplayVertices);
+            float y = Mathf.Sin(i * 2 * Mathf.PI / visionRadiusDisplayVertices);
+            Vector3 point = visionDistance * new Vector3(x, 0, y);
             lr.SetPosition(i, point);
         }
     }
