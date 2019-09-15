@@ -40,8 +40,6 @@ public class FoodSpawner : MonoBehaviour
 			//Run the coroutine tickRate times per second.	
             yield return new WaitForSeconds(1 / tickRate);
         }
-		
-		yield return null;
     }
 
     private void SpawnFood(GameObject food)
@@ -56,7 +54,7 @@ public class FoodSpawner : MonoBehaviour
     private Vector3 SpawnPoint(float heightOffset, float minHeight, float maxHeight)
     {
         //Only try to find a spawnpoint a fixed number of times.
-        for(int i = 0; i < maxSpawnPointTrials)
+        for(int i = 0; i < maxSpawnPointTrials; i++)
         {
             //Pick random x and y values.
             float tx = Random.value;
