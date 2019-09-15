@@ -14,15 +14,12 @@
 
     SubShader
     {
-    	//Set up shader for transparency.
-		ZWrite Off
-		Blend SrcAlpha OneMinusSrcAlpha
-        Tags { "Queue" = "Transparent" "RenderType" = "Transparent"}
+        Tags {"RenderType" = "Opaque"}
         LOD 200
 
         CGPROGRAM
 
-		#pragma surface surf Standard fullforwardshadows alpha vertex:vert
+		#pragma surface surf Standard fullforwardshadows
         #pragma target 3.0
 
 		struct Input
@@ -94,40 +91,6 @@
 			return Out;
 		}
 		
-		//Get a random direction for the gradient noise.
-		float2 gradientNoiseDir(float2 p)
-		{
-			p = p % 289;
-			float x = (34 * p.x + 1) * p.x % 289 + p.y;
-			x = (34 * x + 1) * x % 289;
-			x = frac(x / 41) * 2 - 1;
-			return normalize(float2(x - floor(x + 0.5), abs(x) - 0.5));
-		}
-		
-		//Create a gradient noise texture.
-		float gradientNoise(float2 UV, float Scale)
-		{
-			float2 p = UV * Scale;
-
-			float2 ip = floor(p);
-			float2 fp = frac(p);
-			float d00 = dot(gradientNoiseDir(ip), fp);
-			float d01 = dot(gradientNoiseDir(ip + float2(0, 1)), fp - float2(0, 1));
-			float d10 = dot(gradientNoiseDir(ip + float2(1, 0)), fp - float2(1, 0));
-			float d11 = dot(gradientNoiseDir(ip + float2(1, 1)), fp - float2(1, 1));
-			fp = fp * fp * fp * (fp * (fp * 6 - 15) + 10);
-
-			return lerp(lerp(d00, d01, fp.y), lerp(d10, d11, fp.y), fp.x) + 0.5;
-		}
-		
-		//Apply a height offset to each vertex.
-		void vert(inout appdata_full v)
-		{
-			float2 offsetUV = v.texcoord + (_Time.y * _WaveSpeed * 1/_CellDensity);
-			
-			v.vertex.xyz += v.normal * (gradientNoise(offsetUV, _CellDensity) - 0.5) * _WaveHeight;
-		}
-		
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
 			//Create a voronoi texture for the waves.
@@ -141,7 +104,6 @@
 			o.Albedo = waves * _WaveColour + _Colour * tex2D(_MainTex, IN.uv_MainTex);
 			o.Metallic = 0;
             o.Smoothness = _Glossiness;
-            o.Alpha = _Colour.a;
         }
         ENDCG
     }
