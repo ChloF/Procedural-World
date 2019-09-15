@@ -15,6 +15,7 @@ public class CameraFly : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         totalRotX = 0;
         transform.rotation = Quaternion.identity;
         rb = GetComponent<Rigidbody>();

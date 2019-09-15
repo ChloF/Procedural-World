@@ -38,7 +38,7 @@ MonoBehaviour:
     overrideState: 0
     value: -12
   thicknessModifier:
-    overrideState: 1
+    overrideState: 0
     value: 1.5
   directLightingStrength:
     overrideState: 0
@@ -228,10 +228,10 @@ MonoBehaviour:
     value: 10
   aperture:
     overrideState: 1
-    value: 7.5
+    value: 13.6
   focalLength:
     overrideState: 1
-    value: 86
+    value: 90
   kernelSize:
     overrideState: 1
-    value: 0
+    value: 2
